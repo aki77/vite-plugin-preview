@@ -48,8 +48,11 @@ export default defineComponent({
   </div>
   <main class="flex-1 relative overflow-y-auto focus:outline-none">
     <div class="py-5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <h1 class="text-2xl text-gray-900">{{state.selected ? state.selected : 'Select Component...'}}</h1>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex">
+        <h1 class="text-2xl leading-none text-gray-900">{{state.selected ? state.selected : 'Select Component...'}}</h1>
+        <a v-if="state.selected" :href="`__preview_iframe.html?${state.selected ? state.selected : ''}`" target="_blank" class="ml-2" title="Open new tab">
+          <svg width="1em" height="1em" viewBox="0 0 32 32"><path d="M18 5v2h5.563L11.28 19.281l1.438 1.438L25 8.437V14h2V5zM5 9v18h18V14l-2 2v9H7V11h9l2-2z" fill="currentColor"></path></svg>
+        </a>
       </div>
       <div class="max-w-7xl mx-auto mt-4 px-4 sm:px-6 md:px-8">
         <div class="flex border-2 border-dashed border-gray-200 rounded-lg h-90vh">

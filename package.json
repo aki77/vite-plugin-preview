@@ -7,6 +7,10 @@
     "build": "yarn build:css && tsc",
     "build:css": "windicss assets/App.vue --preflight -to assets/windi.css"
   },
+  "files": [
+    "assets",
+    "dist"
+  ],
   "dependencies": {
     "@vue/composition-api": "^1.2.1",
     "sass": "^1.42.1",

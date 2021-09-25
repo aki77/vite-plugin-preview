@@ -4,7 +4,7 @@
     "outDir": "dist",
     "declaration": true,
     "useDefineForClassFields": true,
-    "module": "CommonJS",
+    "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",

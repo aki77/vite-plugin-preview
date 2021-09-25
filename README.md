@@ -1,11 +1,11 @@
-# vite-plugin-vue2-preview
+# vite-plugin-preview
 
 ## Usage
 
 `vite.config.ts`
 
 ```typescript
-import { PreviewPlugin } from '@aki77/vite-plugin-vue2-preview'
+import { PreviewPlugin } from '@aki77/vite-plugin-preview'
 import { createVuePlugin } from 'vite-plugin-vue2'
 
 export default defineConfig({

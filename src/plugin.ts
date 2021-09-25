@@ -3,10 +3,12 @@ import path from 'path'
 import { readFile } from "fs/promises";
 
 const ASSETS_PREFIX = '__PREVIEW_'
+const FW_PREFIX = 'FW_'
 
 type PreviewPluginConfig = {
   pattern: string
   head?: string
+  framework: 'vue' | 'react'
 }
 
 const readAssetsCode = async (filename: string) => {
@@ -15,22 +17,8 @@ const readAssetsCode = async (filename: string) => {
 }
 
 export const PreviewPlugin = (config: PreviewPluginConfig): Plugin => {
-  const PREVIEW_CONTENT = `
-import Vue from "vue";
-import VueCompositionAPI, { createApp } from '@vue/composition-api'
-import Wrapper from '__PREVIEW_wrapper.vue'
-${config.head ? `import '${config.head}'` : ''}
-
-Vue.use(VueCompositionAPI)
-
-const selected = window.location.search.substring(1)
-if (selected.length > 0) {
-  createApp(Wrapper, { selected }).mount('#app')
-}
-`
-
   return {
-    name: 'vite-plugin-vue2-preview',
+    name: 'vite-plugin-preview',
     apply: 'serve',
     resolveId(id) {
       const normalizedId = id.replace(/^\//, '')
@@ -39,15 +27,17 @@ if (selected.length > 0) {
       }
     },
     async load(id) {
-      if (id === '__PREVIEW_component.ts') {
-        return PREVIEW_CONTENT
+      if (!id.startsWith(ASSETS_PREFIX) || id.includes('?')) return
+
+      const filename = id.replace(ASSETS_PREFIX, '').replace(FW_PREFIX, `${config.framework}/`)
+      const code = await readAssetsCode(filename)
+
+      if (id === '__PREVIEW_FW_component.ts') {
+        const headImport = config.head ? `import '${config.head}';` : ''
+        return [headImport, code].join("\n")
       }
 
-      if (id.startsWith(ASSETS_PREFIX) && !id.includes('?')) {
-        const filename = id.replace(ASSETS_PREFIX, '')
-        const code = await readAssetsCode(filename)
-        return id.endsWith('.vue') ? code.replace('__PREVIEW_PATTERN__', config.pattern) : code
-      }
+      return code.replace('__PREVIEW_PATTERN__', config.pattern)
     },
     async configureServer(server) {
       server.middlewares.use('/__preview', async (req, res) => {

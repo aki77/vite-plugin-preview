@@ -1,5 +1,7 @@
 # vite-plugin-preview
 
+![demo](https://i.gyazo.com/c19f905288bde120e192b137a4768747.png)
+
 ## Usage
 
 `vite.config.ts`

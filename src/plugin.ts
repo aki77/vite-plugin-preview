@@ -2,7 +2,7 @@ import type { Plugin } from "vite";
 import path from 'path'
 import { readFile } from "fs/promises";
 
-const ASSETS_PREFIX = '__PREVIEW_'
+const PREVIEW_PREFIX = '__PREVIEW_'
 
 type PreviewPluginConfig = {
   pattern: string
@@ -17,6 +17,26 @@ const readAssetsCode = async (filename: string) => {
 }
 
 export const PreviewPlugin = (config: PreviewPluginConfig): Plugin => {
+  const mainContent = `
+import App from '@aki77/vite-plugin-preview/dist/App.es.js'
+
+import '@aki77/vite-plugin-preview/assets/windi.css'
+
+const components: Record<string, any> = Object.fromEntries(
+  Object.entries((import.meta as any).glob('${config.pattern}')).map(([path, component]) => {
+    const name = path.split('/').slice(-1)[0].split('.')[0]
+    return [name, component]
+  }),
+)
+
+const app = new App({
+  target: document.getElementById('app'),
+  props: {
+    componentNames: Object.keys(components),
+  }
+})
+`
+
   const renderContent = `
 ${config.head ? `import '${config.head}'` : ''}
 ${config.wrapper ? `import Wrapper from '${config.wrapper}'` : ''}
@@ -38,20 +58,23 @@ render(components, ${config.wrapper ? 'Wrapper' : undefined})
     apply: 'serve',
     resolveId(id) {
       const normalizedId = id.replace(/^\//, '')
-      if (normalizedId.startsWith(ASSETS_PREFIX) && !normalizedId.includes('?')) {
+      if (normalizedId.startsWith(PREVIEW_PREFIX) && !normalizedId.includes('?')) {
         return normalizedId
       }
     },
     async load(id) {
-      if (!id.startsWith(ASSETS_PREFIX) || id.includes('?')) return
+      if (!id.startsWith(PREVIEW_PREFIX) || id.includes('?')) return
+
+      if (id === '__PREVIEW_MAIN.ts') {
+        return mainContent
+      }
 
       if (id === '__PREVIEW_RENDER.ts') {
         return renderContent
       }
 
-      const filename = id.replace(ASSETS_PREFIX, '')
-      const code = await readAssetsCode(filename)
-      return code.replace('__PREVIEW_PATTERN__', config.pattern)
+      const filename = id.replace(PREVIEW_PREFIX, '')
+      return await readAssetsCode(filename)
     },
     async configureServer(server) {
       server.middlewares.use('/__preview', async (req, res) => {

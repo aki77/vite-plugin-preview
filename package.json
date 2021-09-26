@@ -10,7 +10,8 @@
   },
   "files": [
     "assets",
-    "dist"
+    "dist",
+    "renderers"
   ],
   "dependencies": {
     "sass": "^1.42.1"

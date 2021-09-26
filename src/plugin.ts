@@ -16,6 +16,16 @@ const readAssetsCode = async (filename: string) => {
   return code.toString()
 }
 
+const REACT_REFRESH_PREAMBLE = `
+<script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+`
+
 export const PreviewPlugin = (config: PreviewPluginConfig): Plugin => {
   const mainContent = `
 import App from '@aki77/vite-plugin-preview/dist/App.es.js'
@@ -43,7 +53,6 @@ ${config.wrapper ? `import Wrapper from '${config.wrapper}'` : ''}
 import { render } from '@aki77/vite-plugin-preview/renderers/${config.framework}'
 
 const components: Record<string, any> = Object.fromEntries(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Object.entries((import.meta as any).glob('${config.pattern}')).map(([path, component]) => {
     const name = path.split('/').slice(-1)[0].split('.')[0]
     return [name, component]
@@ -77,13 +86,22 @@ render(components, ${config.wrapper ? 'Wrapper' : undefined})
       return await readAssetsCode(filename)
     },
     async configureServer(server) {
-      server.middlewares.use('/__preview', async (req, res) => {
-        res.write(await readAssetsCode('index.html'))
-        res.end()
+      server.middlewares.use('/__preview', async (req, res, next) => {
+        try {
+          res.write(await readAssetsCode('index.html'))
+          res.end()
+        } catch (error) {
+          return next(error)
+        }
       })
-      server.middlewares.use('/__preview_iframe', async (req, res) => {
-        res.write(await readAssetsCode('iframe.html'))
-        res.end()
+      server.middlewares.use('/__preview_iframe', async (req, res, next) => {
+        try {
+          const code = await readAssetsCode('iframe.html')
+          res.write(config.framework === 'react' ? code.replace('</head>',  `${REACT_REFRESH_PREAMBLE}</head>`): code)
+          res.end()
+        } catch (error) {
+          return next(error)
+        }
       })
     }
   }

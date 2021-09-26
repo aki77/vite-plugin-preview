@@ -1,6 +1,6 @@
 {
   "name": "@aki77/vite-plugin-preview",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "dist/plugin.js",
   "types": "dist/plugin.d.ts",
   "scripts": {

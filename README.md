@@ -33,6 +33,7 @@ yarn vite --open /__preview
 import path from 'path'
 import { PreviewPlugin } from '@aki77/vite-plugin-preview'
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   resolve: {
@@ -47,6 +48,7 @@ export default defineConfig({
     'process.env': {},
   },
   plugins: [
+    react(),
     PreviewPlugin({
       pattern: './src/**/*.preview.tsx',
       wrapper: path.resolve(__dirname, '__preview__/Wrapper.tsx'),

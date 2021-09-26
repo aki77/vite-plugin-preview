@@ -4,7 +4,10 @@
 </script>
 
 <div class="h-screen flex overflow-hidden bg-white text-gray-900">
-  <div class="hidden md:flex md:flex-shrink-0 border-r border-gray-200">
+  <div
+    class="flex
+  flex-shrink-0 border-r border-gray-200"
+  >
     <div class="flex flex-col w-48">
       <div class="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
         <div class="flex items-center flex-shrink-0 px-4">

@@ -16,16 +16,6 @@ const readAssetsCode = async (filename: string) => {
   return code.toString()
 }
 
-const REACT_REFRESH_PREAMBLE = `
-<script type="module">
-import RefreshRuntime from "/@react-refresh"
-RefreshRuntime.injectIntoGlobalHook(window)
-window.$RefreshReg$ = () => {}
-window.$RefreshSig$ = () => (type) => type
-window.__vite_plugin_react_preamble_installed__ = true
-</script>
-`
-
 export const PreviewPlugin = (config: PreviewPluginConfig): Plugin => {
   const mainContent = `
 import App from '@aki77/vite-plugin-preview/dist/App.es.js'
@@ -97,7 +87,8 @@ render(components, ${config.wrapper ? 'Wrapper' : undefined})
       server.middlewares.use('/__preview_iframe', async (req, res, next) => {
         try {
           const code = await readAssetsCode('iframe.html')
-          res.write(config.framework === 'react' ? code.replace('</head>',  `${REACT_REFRESH_PREAMBLE}</head>`): code)
+          const html = await server.transformIndexHtml(req.url!, code)
+          res.write(html)
           res.end()
         } catch (error) {
           return next(error)

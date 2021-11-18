@@ -8,7 +8,7 @@ type PreviewPluginConfig = {
   pattern: string
   wrapper?: string
   head?: string
-  framework: 'vue2' | 'react'
+  framework: 'vue' | 'vue2' | 'react'
 }
 
 const readAssetsCode = async (filename: string) => {

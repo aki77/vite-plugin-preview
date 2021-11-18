@@ -1,6 +1,6 @@
 {
   "name": "@aki77/vite-plugin-preview",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Get previews of your components",
   "main": "dist/plugin.js",
   "types": "dist/plugin.d.ts",

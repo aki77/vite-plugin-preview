@@ -81,6 +81,57 @@ const Wrapper: VFC<WrapperProps> = ({ children }) => {
 export default Wrapper
 ```
 
+### Vue3
+
+```typescript
+//vite.config.ts
+import path from 'path'
+import { PreviewPlugin } from '@aki77/vite-plugin-preview'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  resolve: {
+    alias: [
+      {
+        find: '@/',
+        replacement: `${path.resolve(__dirname, 'src')}/`,
+      },
+    ],
+  },
+  plugins: [
+    PreviewPlugin({
+      pattern: './src/**/*.preview.vue',
+      head: '@/previews/head',
+      wrapper: '@/previews/Wrapper.vue',
+      framework: 'vue',
+    }),
+    vue(),
+  ],
+})
+```
+
+```typescript
+// src/previews/head.ts
+import '@/stylesheets/main.scss'
+```
+
+```vue
+// src/previews/Wrapper.vue
+<template>
+  <div class="p-4">
+    <slot></slot>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({})
+</script>
+```
+
+
 ### Vue2
 
 ```typescript
